@@ -48,9 +48,9 @@ class TestTask2(unittest.TestCase):
         result = result.to_dict(orient='list')
         self.assertEqual(result, expected_result)
 
-    def test_spell_check(self):
+    def test_casing_and_spell_check(self):
         test_Series = np.array(['cycl ', 'badminton', '  hiking ', 'crckt'])
         expected_series = pd.Series(np.array(['cycle', 'badminton', 'hiking', 'cricket']))
         dc = DataCleaning()
-        result = dc.spell_check(pd.Series(test_Series))
+        result = dc.casing_and_spell_check(pd.Series(test_Series))
         self.assertTrue(result.compare(expected_series).empty)

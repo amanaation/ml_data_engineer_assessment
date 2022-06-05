@@ -26,6 +26,7 @@ class DataCleaning:
     3. casing_and_spell_check: This function formats every value to lowercase for better grouping and improves the spelling
     error
     """
+
     def __init__(self):
         pass
 
@@ -37,8 +38,8 @@ class DataCleaning:
 
     def clean_phone_numbers(self, df: pd.DataFrame) -> pd.DataFrame:
         if 'PhoneNumber' in df.columns:
-            df['PhoneNumber'] = df['PhoneNumber'].replace(regex='\.', value="-")\
-                                                 .replace(regex='x(.*?)$', value="")
+            df['PhoneNumber'] = df['PhoneNumber'].replace(regex='\.', value="-") \
+                .replace(regex='x(.*?)$', value="")
         return df
 
     def casing_and_spell_check(self, series: pd.Series) -> pd.Series:
@@ -60,7 +61,7 @@ class DataCleaning:
         series = series.map(lambda x: spell(x) if type(x) == str else x)
         return series
 
-    def clean(self, csv_file_path: str):
+    def clean(self, csv_file_path: str) -> pd.DataFrame:
         people_df = pd.read_csv(csv_file_path)
 
         # [Optional] Cleaning Step 1 - Removing people with no interest
@@ -77,16 +78,17 @@ class DataCleaning:
         logger.info("Formatting Interests1 column")
         df['Interest1'] = self.casing_and_spell_check(df['Interest1'])
 
-        # logger.info("Formatting Interests2 column")
-        # df['Interest2'] = self.casing_and_spell_check(df['Interest2'])
-        #
-        # logger.info("Formatting Interests3 column")
-        # df['Interest3'] = self.casing_and_spell_check(df['Interest3'])
-        #
-        # logger.info("Formatting Interests4 column")
-        # df['Interest4'] = self.casing_and_spell_check(df['Interest4'])
+        logger.info("Formatting Interests2 column")
+        df['Interest2'] = self.casing_and_spell_check(df['Interest2'])
+
+        logger.info("Formatting Interests3 column")
+        df['Interest3'] = self.casing_and_spell_check(df['Interest3'])
+
+        logger.info("Formatting Interests4 column")
+        df['Interest4'] = self.casing_and_spell_check(df['Interest4'])
 
         logger.info("Completed cleaning of data")
+        return df
 
 
 if __name__ == "__main__":

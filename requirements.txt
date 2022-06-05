@@ -4,3 +4,5 @@ pandas==1.4.2
 PyMySQL==1.0.2
 simplejson==3.17.6
 fastapi==0.78.0
+uvicorn==0.17.6
+autocorrect==2.6.1

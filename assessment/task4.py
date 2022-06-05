@@ -13,8 +13,7 @@ class Analytics:
                               }
 
         self.TABLE = 'people'
-        self.db = DB()
-        self.db._intialize_connection(**connection_details)
+        self.db = DB(**connection_details)
 
     def get_minimum(self, column):
         try:

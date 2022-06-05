@@ -8,22 +8,30 @@ logger = logging.getLogger(__name__)
 
 
 class DB:
-    def _intialize_connection(self, db_host: str,
-                              db_port: int,
-                              db_user: str,
-                              db_password: str,
-                              database: str,
-                              engine='mysql') -> None:
+    file_type_function_mapping = {
+        'csv': pd.read_csv,
+        'json': pd.read_json,
+    }
+
+    def __init__(self, db_host: str,
+                 db_port: int,
+                 db_user: str,
+                 db_password: str,
+                 database: str,
+                 engine='mysql') -> None:
         self.engine = create_engine(f'{engine}://{db_user}:{db_password}@{db_host}:{db_port}/{database}')
 
-    def bulk_transfer_from_csv(self, table: str,
-                               data_file_path: str,
-                               if_exists='replace') -> None:
+    def bulk_transfer_from_file(self, file_path,
+                                file_type: str,
+                                target_table: str,
+                                if_exists='replace') -> None:
         try:
-            df = pd.read_csv(data_file_path)
+            file_type = file_type.lower()
+            reader = self.file_type_function_mapping[file_type]
+            df = reader(file_path)
             with self.engine.connect() as connection:
-                df.to_sql(table, connection, if_exists=if_exists, index=False)
-            logger.info("CSV to SQL transfer success!!")
+                df.to_sql(target_table, connection, if_exists=if_exists, index=False)
+            logger.info(f"{file_type.upper()} to SQL transfer success!!")
         except Exception as e:
             logger.error("Following occurred while transferring data from csv to sql :")
             logger.error(e)
@@ -51,9 +59,9 @@ if __name__ == "__main__":
                           "db_port": 3300,
 
                           }
-    db = DB()
-    db._intialize_connection(**connection_details)
-    # db.bulk_transfer_from_csv('people3',
-    #                           '/Users/amanmishra/Desktop/aman/asessment/ml_data_engineer_assessment/data/people3.csv')
-    # db.single_record_transfer('people2', {"Name": "Aman Mishra"})
-    print(db.execute_query("insert into people2(name) values('Aman Mishra')"))
+    db = DB(**connection_details)
+    db.bulk_transfer_from_file(target_table='people',
+                               file_path='data/people.csv',
+                               file_type='csv')
+    db.single_record_transfer('people', {"Name": "Dr.Flintsone"})
+    print(db.execute_query("insert into people(name, age) values('Albert Einstien', 60)"))
